@@ -674,7 +674,7 @@ class GaussianDiffusion:
         output = th.where((t == 0), decoder_nll, kl)
         return {"output": output, "pred_xstart": out["pred_xstart"]}
 
-    def training_losses(self, model, x_start, t, model_kwargs=None, noise=None):
+    def training_losses(self, model, x_start, x_start_clean, t, model_kwargs=None, noise=None):
         """
         Compute training losses for a single timestep.
 
@@ -691,8 +691,11 @@ class GaussianDiffusion:
             model_kwargs = {}
         if noise is None:
             noise = th.randn_like(x_start)
+            
+        #! use clean shadow image instead of shadow_one for loss
         x_t = self.q_sample(x_start, t, noise=noise)
-
+        # x_t_clean = self.q_sample(x_start_clean, t, noise=noise)
+        # print(x_t.shape, self.loss_type, self.model_var_type, self.model_mean_type)
         terms = {}
 
         if self.loss_type == LossType.KL or self.loss_type == LossType.RESCALED_KL:
@@ -721,7 +724,7 @@ class GaussianDiffusion:
                 frozen_out = th.cat([model_output.detach(), model_var_values], dim=1)
                 terms["vb"] = self._vb_terms_bpd(
                     model=lambda *args, r=frozen_out: r,
-                    x_start=x_start,
+                    x_start=x_start_clean,
                     x_t=x_t,
                     t=t,
                     clip_denoised=False,

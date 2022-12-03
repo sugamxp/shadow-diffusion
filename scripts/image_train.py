@@ -27,11 +27,19 @@ def main():
         **args_to_dict(args, model_and_diffusion_defaults().keys())
     )
     model.to(dist_util.dev())
-    schedule_sampler = create_named_schedule_sampler(args.schedule_sampler, diffusion)
+    schedule_sampler = create_named_schedule_sampler(
+        args.schedule_sampler, diffusion)
 
     logger.log("creating data loader...")
     data = load_data(
         data_dir=args.data_dir,
+        batch_size=args.batch_size,
+        image_size=args.image_size,
+        class_cond=args.class_cond,
+    )
+
+    clean_data = load_data(
+        data_dir='datasets_clean',
         batch_size=args.batch_size,
         image_size=args.image_size,
         class_cond=args.class_cond,
@@ -42,6 +50,7 @@ def main():
         model=model,
         diffusion=diffusion,
         data=data,
+        clean_data=clean_data,
         batch_size=args.batch_size,
         microbatch=args.microbatch,
         lr=args.lr,
@@ -53,8 +62,7 @@ def main():
         fp16_scale_growth=args.fp16_scale_growth,
         schedule_sampler=schedule_sampler,
         weight_decay=args.weight_decay,
-        lr_anneal_steps=args.lr_anneal_steps,
-    ).run_loop()
+        lr_anneal_steps=args.lr_anneal_steps).run_loop()
 
 
 def create_argparser():
