@@ -69,7 +69,7 @@ def main():
     
     shadow = next(data)
     betas = get_named_beta_schedule('linear', 1000)
-    shadow[0] = shadow.to("cuda")
+    shadow[0] = shadow[0].to("cuda")
     print('shadow => ', shadow)
 
     gdiff = gaussian_diffusion.GaussianDiffusion(
