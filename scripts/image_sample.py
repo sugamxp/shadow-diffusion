@@ -80,22 +80,21 @@ def main():
         yield from data
         
         
-    shadow_imgs = []
-    for d in data:
-        shadow_imgs.append(d)
-        if len(shadow_imgs) == 30:
-            break
+    # shadow_imgs = []
+    # for d in data:
+    #     shadow_imgs.append(d)
+    #     if len(shadow_imgs) == 30:
+    #         break
     
     all_images = []
     all_labels = []
     cnt = 0
-    print('shadow_imgs len', len(shadow_imgs))
+    # print('shadow_imgs len', len(shadow_imgs))
     
     while len(all_images) * args.batch_size < args.num_samples:
-        
         print('len(all_images) ', len(all_images))
-        shadow = shadow_imgs[cnt][0]
-        x_t = gdiff.q_sample(shadow, th.tensor([200]), noise=None)
+        shadow = next(data)[0]
+        x_t = gdiff.q_sample(shadow, th.tensor([300]), noise=None)
         x_t = x_t.to("cuda")
         print('shadow noise => ', x_t.shape)
         print('==>', cnt)
