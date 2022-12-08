@@ -76,11 +76,14 @@ def main():
         loss_type = gaussian_diffusion.LossType.RESCALED_MSE,
         rescale_timesteps=True 
     )
+    def get_shadow_imgs(data):
+        yield from data
+        
+    shadow_imgs = list(get_shadow_imgs(data))
     
     all_images = []
     all_labels = []
     cnt = 0
-    shadow_imgs = [for x in data]
     print('shadow_imgs len', len(shadow_imgs))
     
     while len(all_images) * args.batch_size < args.num_samples:
