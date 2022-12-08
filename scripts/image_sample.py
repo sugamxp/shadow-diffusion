@@ -67,9 +67,7 @@ def main():
         class_cond=args.class_cond,
     )
     
-    shadow = next(data)
     betas = get_named_beta_schedule('linear', 1000)
-    print('shadow => ', shadow)
 
     gdiff = gaussian_diffusion.GaussianDiffusion(
         betas=betas, 
@@ -79,13 +77,20 @@ def main():
         rescale_timesteps=True 
     )
     
-    x_t = gdiff.q_sample(shadow[0], th.tensor([200]), noise=None)
-    x_t = x_t.to("cuda")
-    print('shadow noise => ', x_t.shape)
+
     
     all_images = []
     all_labels = []
+    cnt = 0
     while len(all_images) * args.batch_size < args.num_samples:
+        
+        shadow = next(data)
+        x_t = gdiff.q_sample(shadow[0], th.tensor([200]), noise=None)
+        x_t = x_t.to("cuda")
+        print('shadow noise => ', x_t.shape)
+        print('==>', cnt)
+        cnt += 1
+        
         model_kwargs = {}
         if args.class_cond:
             classes = th.randint(
@@ -95,6 +100,7 @@ def main():
         sample_fn = (
             diffusion.p_sample_loop if not args.use_ddim else diffusion.ddim_sample_loop
         )
+        print('==> calling sample_fn')
         sample = sample_fn(
             model,
             (args.batch_size, 3, args.image_size, args.image_size),
