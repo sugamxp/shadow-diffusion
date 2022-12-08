@@ -82,7 +82,7 @@ def main():
     all_images = []
     all_labels = []
     cnt = 0
-    while len(all_images) * args.batch_size < args.num_samples:
+    while cnt < 5:
         
         shadow = next(data)
         x_t = gdiff.q_sample(shadow[0], th.tensor([200]), noise=None)
