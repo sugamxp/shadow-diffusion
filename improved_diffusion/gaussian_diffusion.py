@@ -454,7 +454,7 @@ class GaussianDiffusion:
             img = noise
         else:
             img = th.randn(*shape, device=device)
-        indices = list(range(self.num_timesteps))[:50][::-1]
+        indices = list(range(self.num_timesteps))[:200][::-1]
 
         if True:
             # Lazy import so that we don't depend on tqdm.
@@ -477,7 +477,6 @@ class GaussianDiffusion:
                 yield out
                 img = out["sample"]
                 print('==> img shape', img.shape)
-                break
 
     def ddim_sample(
         self,

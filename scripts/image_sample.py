@@ -79,7 +79,7 @@ def main():
         rescale_timesteps=True 
     )
     
-    x_t = gdiff.q_sample(shadow[0], th.tensor([50]), noise=None)
+    x_t = gdiff.q_sample(shadow[0], th.tensor([200]), noise=None)
     x_t = x_t.to("cuda")
     print('shadow noise => ', x_t.shape)
     
