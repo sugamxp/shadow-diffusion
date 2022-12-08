@@ -69,7 +69,6 @@ def main():
     
     shadow = next(data)
     betas = get_named_beta_schedule('linear', 1000)
-    shadow[0] = shadow[0].to("cuda")
     print('shadow => ', shadow)
 
     gdiff = gaussian_diffusion.GaussianDiffusion(
@@ -81,7 +80,7 @@ def main():
     )
     
     x_t = gdiff.q_sample(shadow[0], th.tensor([50]), noise=None)
-
+    x_t = x_t.to("cuda")
     print('shadow noise => ', x_t.shape)
     
     all_images = []
