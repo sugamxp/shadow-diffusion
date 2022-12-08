@@ -79,7 +79,12 @@ def main():
     def get_shadow_imgs(data):
         yield from data
         
-    shadow_imgs = list(get_shadow_imgs(data))
+        
+    shadow_imgs = []
+    for d in next(data):
+        if len(shadow_imgs) == 10:
+            break
+        shadow_imgs.append(d)
     
     all_images = []
     all_labels = []
