@@ -476,8 +476,8 @@ class GaussianDiffusion:
                 )
                 yield out
                 img = out["sample"]
-                break
                 print('==> img shape', img.shape)
+                break
 
     def ddim_sample(
         self,
