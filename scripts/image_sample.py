@@ -77,12 +77,13 @@ def main():
         rescale_timesteps=True 
     )
     
-
-    
     all_images = []
     all_labels = []
     cnt = 0
-    while cnt < 5:
+    shadow_imgs = [for x in data]
+    print('shadow_imgs len', len(shadow_imgs))
+    
+    while len(all_images) * args.batch_size < args.num_samples:
         
         shadow = next(data)
         x_t = gdiff.q_sample(shadow[0], th.tensor([200]), noise=None)
