@@ -67,7 +67,7 @@ def main():
         class_cond=args.class_cond,
     )
     
-    shadow = next(data)
+    shadow = next(data).device
     betas = get_named_beta_schedule('linear', 1000)
     print('shadow => ', shadow)
 
