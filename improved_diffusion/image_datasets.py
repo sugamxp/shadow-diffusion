@@ -27,7 +27,7 @@ def load_data(
     if not data_dir:
         raise ValueError("unspecified data directory")
     all_files = _list_image_files_recursively(data_dir)
-    all_files.sort()
+    # all_files.sort()
     classes = None
     if class_cond:
         # Assume classes are the first part of the filename,

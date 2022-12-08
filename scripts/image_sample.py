@@ -83,7 +83,7 @@ def main():
     shadow_imgs = []
     for d in data:
         shadow_imgs.append(d)
-        if len(shadow_imgs) == 10:
+        if len(shadow_imgs) == 30:
             break
     
     all_images = []
