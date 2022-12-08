@@ -81,10 +81,10 @@ def main():
         
         
     shadow_imgs = []
-    for d in next(data):
+    for d in data:
+        shadow_imgs.append(d)
         if len(shadow_imgs) == 10:
             break
-        shadow_imgs.append(d)
     
     all_images = []
     all_labels = []
