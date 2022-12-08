@@ -67,8 +67,9 @@ def main():
         class_cond=args.class_cond,
     )
     
-    shadow = next(data).device
+    shadow = next(data)
     betas = get_named_beta_schedule('linear', 1000)
+    shadow[0] = shadow.to("cuda")
     print('shadow => ', shadow)
 
     gdiff = gaussian_diffusion.GaussianDiffusion(
