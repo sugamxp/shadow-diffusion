@@ -454,15 +454,16 @@ class GaussianDiffusion:
             img = noise
         else:
             img = th.randn(*shape, device=device)
-        indices = list(range(self.num_timesteps))[::-1]
+        indices = list(range(self.num_timesteps))[:50][::-1]
 
-        if progress:
+        if True:
             # Lazy import so that we don't depend on tqdm.
             from tqdm.auto import tqdm
 
             indices = tqdm(indices)
 
         for i in indices:
+            print('==> index', i)
             t = th.tensor([i] * shape[0], device=device)
             with th.no_grad():
                 out = self.p_sample(
@@ -475,6 +476,8 @@ class GaussianDiffusion:
                 )
                 yield out
                 img = out["sample"]
+                break
+                print('==> img shape', img.shape)
 
     def ddim_sample(
         self,
@@ -738,7 +741,7 @@ class GaussianDiffusion:
                 ModelMeanType.PREVIOUS_X: self.q_posterior_mean_variance(
                     x_start=x_start, x_t=x_t, t=t
                 )[0],
-                ModelMeanType.START_X: x_start,
+                ModelMeanType.START_X: x_start_clean,
                 ModelMeanType.EPSILON: noise,
             }[self.model_mean_type]
             assert model_output.shape == target.shape == x_start.shape

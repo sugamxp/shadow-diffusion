@@ -9,8 +9,8 @@ import os
 import numpy as np
 import torch as th
 import torch.distributed as dist
-
-from improved_diffusion import dist_util, logger
+import math
+from improved_diffusion import dist_util, logger, gaussian_diffusion, image_datasets
 from improved_diffusion.script_util import (
     NUM_CLASSES,
     model_and_diffusion_defaults,
@@ -19,6 +19,27 @@ from improved_diffusion.script_util import (
     args_to_dict,
 )
 
+
+def get_named_beta_schedule(schedule_name, num_diffusion_timesteps):
+    """
+    Get a pre-defined beta schedule for the given name.
+
+    The beta schedule library consists of beta schedules which remain similar
+    in the limit of num_diffusion_timesteps.
+    Beta schedules may be added, but should not be removed or changed once
+    they are committed to maintain backwards compatibility.
+    """
+    if schedule_name == "linear":
+        # Linear schedule from Ho et al, extended to work for any number of
+        # diffusion steps.
+        scale = 1000 / num_diffusion_timesteps
+        beta_start = scale * 0.0001
+        beta_end = scale * 0.02
+        return np.linspace(
+            beta_start, beta_end, num_diffusion_timesteps, dtype=np.float64
+        )
+    else:
+        raise NotImplementedError(f"unknown beta schedule: {schedule_name}")
 
 def main():
     args = create_argparser().parse_args()
@@ -37,6 +58,31 @@ def main():
     model.eval()
 
     logger.log("sampling...")
+    
+    logger.log('getting shadow images')
+    data = image_datasets.load_data(
+        data_dir='datasets',
+        batch_size=args.batch_size,
+        image_size=args.image_size,
+        class_cond=args.class_cond,
+    )
+    
+    shadow = next(data)
+    betas = get_named_beta_schedule('linear', 1000)
+    print('shadow => ', shadow)
+
+    gdiff = gaussian_diffusion.GaussianDiffusion(
+        betas=betas, 
+        model_mean_type = gaussian_diffusion.ModelMeanType.START_X,
+        model_var_type = gaussian_diffusion.ModelVarType.FIXED_LARGE,
+        loss_type = gaussian_diffusion.LossType.RESCALED_MSE,
+        rescale_timesteps=True 
+    )
+    
+    x_t = gdiff.q_sample(shadow[0], th.tensor([50]), noise=None)
+
+    print('shadow noise => ', x_t.shape)
+    
     all_images = []
     all_labels = []
     while len(all_images) * args.batch_size < args.num_samples:
@@ -52,6 +98,7 @@ def main():
         sample = sample_fn(
             model,
             (args.batch_size, 3, args.image_size, args.image_size),
+            noise=x_t,
             clip_denoised=args.clip_denoised,
             model_kwargs=model_kwargs,
         )
