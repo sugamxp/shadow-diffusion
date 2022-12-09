@@ -169,8 +169,9 @@ class TrainLoop:
             or self.step + self.resume_step < self.lr_anneal_steps
         ):
             batch, cond = next(self.data)
-            batch_clean, cond_good = next(self.clean_data)
-            self.run_step(batch, cond, batch_clean)
+            # batch_clean, cond_good = next(self.clean_data)
+            
+            self.run_step(batch, cond)
             if self.step % self.log_interval == 0:
                 logger.dumpkvs()
             if self.step % self.save_interval == 0:
@@ -183,7 +184,7 @@ class TrainLoop:
         if (self.step - 1) % self.save_interval != 0:
             self.save()
 
-    def run_step(self, batch, cond, batch_clean):
+    def run_step(self, batch, cond, batch_clean = None):
         self.forward_backward(batch, cond, batch_clean)
         if self.use_fp16:
             self.optimize_fp16()
@@ -195,7 +196,7 @@ class TrainLoop:
         zero_grad(self.model_params)
         for i in tqdm(range(0, batch.shape[0], self.microbatch)):
             micro = batch[i: i + self.microbatch].to(dist_util.dev())
-            micro_clean = batch_clean[i: i + self.microbatch].to(dist_util.dev())
+            micro_clean = None
             micro_cond = {
                 k: v[i: i + self.microbatch].to(dist_util.dev())
                 for k, v in cond.items()

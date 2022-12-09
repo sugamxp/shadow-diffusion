@@ -726,7 +726,7 @@ class GaussianDiffusion:
                 frozen_out = th.cat([model_output.detach(), model_var_values], dim=1)
                 terms["vb"] = self._vb_terms_bpd(
                     model=lambda *args, r=frozen_out: r,
-                    x_start=x_start_clean,
+                    x_start=x_start,
                     x_t=x_t,
                     t=t,
                     clip_denoised=False,
