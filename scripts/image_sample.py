@@ -92,12 +92,12 @@ def main():
     # print('shadow_imgs len', len(shadow_imgs))
     
     while len(all_images) * args.batch_size < args.num_samples:
-        print('len(all_images) ', len(all_images))
+        logger.log('len(all_images) ', len(all_images))
         shadow = next(data)[0]
-        x_t = gdiff.q_sample(shadow, th.tensor([750]), noise=None)
+        x_t = gdiff.q_sample(shadow, th.tensor([200]), noise=None)
         x_t = x_t.to("cuda")
-        print('shadow noise => ', x_t.shape)
-        print('==>', cnt)
+        logger.log('shadow noise => ', x_t.shape)
+        logger.log('==>', cnt)
         cnt += 1
         
         model_kwargs = {}
