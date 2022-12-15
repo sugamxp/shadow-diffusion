@@ -1,6 +1,7 @@
 from PIL import Image
 import blobfile as bf
 from mpi4py import MPI
+from improved_diffusion import logger
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 
@@ -28,6 +29,7 @@ def load_data(
         raise ValueError("unspecified data directory")
     all_files = _list_image_files_recursively(data_dir)
     # all_files.sort()
+    logger.log('==> all_files', all_files)
     classes = None
     if class_cond:
         # Assume classes are the first part of the filename,
@@ -72,12 +74,14 @@ class ImageDataset(Dataset):
         self.resolution = resolution
         self.local_images = image_paths[shard:][::num_shards]
         self.local_classes = None if classes is None else classes[shard:][::num_shards]
+        logger.log('==> ImageDataset', resolution, image_paths, classes, shard, num_shards)
 
     def __len__(self):
         return len(self.local_images)
 
     def __getitem__(self, idx):
         path = self.local_images[idx]
+        logger.log('==> image_path', path, idx)
         with bf.BlobFile(path, "rb") as f:
             pil_image = Image.open(f)
             pil_image.load()
