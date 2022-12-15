@@ -94,7 +94,7 @@ def main():
     while len(all_images) * args.batch_size < args.num_samples:
         logger.log('len(all_images) ', len(all_images))
         shadow = next(data)[0]
-        x_t = gdiff.q_sample(shadow, th.tensor([200]), noise=None)
+        x_t = gdiff.q_sample(shadow, th.tensor([300]), noise=None)
         x_t = x_t.to("cuda")
         logger.log('shadow noise => ', x_t.shape)
         logger.log('==>', cnt)
