@@ -31,6 +31,9 @@ We divided the solutions into two board categories -
 
 2. Overwrite sampling steps. Change the index value based on your requirement [here](https://github.com/sugamxp/shadow-diffusion/blob/3e66a92a83f77cf7877a667154fa2aadadb2bee1/improved_diffusion/gaussian_diffusion.py#L457).
 
+Output Images [here](https://drive.google.com/drive/folders/1oqJozzmElI1JAJ-0A1qioaGDiYx-57ck)
+
+Project Report [here](report/CV_Shadow_Removal_Report.pdf)
 # Usage
 
 This section of the README walks through how to train and sample from a model.
